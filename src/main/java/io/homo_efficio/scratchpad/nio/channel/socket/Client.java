@@ -25,15 +25,17 @@ public class Client {
             System.out.println("$$ 연결 성공, from " + socketChannel.getLocalAddress().toString() +
                     " to " + socketChannel.getRemoteAddress().toString());
 
-            System.out.print("msg: ");
+            while (true) {
+                System.out.print("msg: ");
 
-            final String msg = scanner.nextLine();
+                final String msg = scanner.nextLine();
 
-            final ByteBuffer byteBuffer = ByteBuffer.wrap(msg.getBytes());
+                final ByteBuffer byteBuffer = ByteBuffer.wrap(msg.getBytes());
 
-            socketChannel.write(byteBuffer);
+                socketChannel.write(byteBuffer);
 
-            byteBuffer.clear();
+                byteBuffer.clear();
+            }
         }
 
     }
