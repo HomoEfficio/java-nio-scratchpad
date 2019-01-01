@@ -2,6 +2,7 @@ package io.homo_efficio.scratchpad.nio.channel.socket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
@@ -18,11 +19,16 @@ public class BlockingServer {
 
         System.out.println("# 서버 대기 중.." + serverSocketChannel.getLocalAddress().toString());
 
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
 
         while (true) {
             final SocketChannel socketChannel = serverSocketChannel.accept();
             final String clientInfo = socketChannel.getRemoteAddress().toString();
             System.out.println("## 연결 수락, from " + clientInfo);
+
+            socketChannel.read(byteBuffer);
+            System.out.println("### msg from [" + clientInfo + "]: " + new String(byteBuffer.array()));
+            byteBuffer.clear();
         }
     }
 
