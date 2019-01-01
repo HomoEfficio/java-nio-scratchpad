@@ -23,10 +23,12 @@ public class BlockingServer {
 
         while (true) {
             final SocketChannel socketChannel = serverSocketChannel.accept();
+            socketChannel.configureBlocking(false);
             final String clientInfo = socketChannel.getRemoteAddress().toString();
             System.out.println("## 연결 수락, from " + clientInfo);
 
-            socketChannel.read(byteBuffer);
+            while (socketChannel.read(byteBuffer) <= 0) {}
+
             System.out.println("### msg from [" + clientInfo + "]: " + new String(byteBuffer.array()));
             byteBuffer.clear();
         }
