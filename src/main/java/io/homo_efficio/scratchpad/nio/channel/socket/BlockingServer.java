@@ -2,7 +2,6 @@ package io.homo_efficio.scratchpad.nio.channel.socket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
@@ -22,30 +21,7 @@ public class BlockingServer {
 
         while (true) {
             final SocketChannel socketChannel = serverSocketChannel.accept();
-            new Thread(() -> {
-                String clientInfo = null;
-                final String threadName = Thread.currentThread().getName();
-                try {
-                    clientInfo = socketChannel.getRemoteAddress().toString();
-                    System.out.println("## [" + threadName + "] 연결 수락, from " + clientInfo);
-
-                    ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-                    while (socketChannel.read(byteBuffer) > 0) {
-                        final String bufferedMessage = new String(byteBuffer.array());
-                        System.out.println("### [" + threadName + "] message from [" + clientInfo + "]: " + bufferedMessage);
-                        byteBuffer.clear();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    System.out.println("#### [" + threadName + "] closing SocketChannel for [" + clientInfo + "]");
-                    try {
-                        socketChannel.close();
-                    } catch (IOException e) {
-
-                    }
-                }
-            }).start();
+            new Thread(new EchoHandler(socketChannel)).start();
         }
     }
 
