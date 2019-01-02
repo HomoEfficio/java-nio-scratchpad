@@ -17,20 +17,35 @@ public class BlockingServer {
                 .bind(new InetSocketAddress("localhost", 5555));
         addShutdownHook(serverSocketChannel);
 
-        System.out.println("# 서버 대기 중.." + serverSocketChannel.getLocalAddress().toString());
-
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        final String mainThreadName = Thread.currentThread().getName();
+        System.out.println("# [" + mainThreadName + "] 서버 대기 중.." + serverSocketChannel.getLocalAddress().toString());
 
         while (true) {
             final SocketChannel socketChannel = serverSocketChannel.accept();
-            socketChannel.configureBlocking(false);
-            final String clientInfo = socketChannel.getRemoteAddress().toString();
-            System.out.println("## 연결 수락, from " + clientInfo);
+            new Thread(() -> {
+                String clientInfo = null;
+                final String threadName = Thread.currentThread().getName();
+                try {
+                    clientInfo = socketChannel.getRemoteAddress().toString();
+                    System.out.println("## [" + threadName + "] 연결 수락, from " + clientInfo);
 
-            while (socketChannel.read(byteBuffer) <= 0) {}
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                    while (socketChannel.read(byteBuffer) > 0) {
+                        final String bufferedMessage = new String(byteBuffer.array());
+                        System.out.println("### [" + threadName + "] message from [" + clientInfo + "]: " + bufferedMessage);
+                        byteBuffer.clear();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    System.out.println("#### [" + threadName + "] closing SocketChannel for [" + clientInfo + "]");
+                    try {
+                        socketChannel.close();
+                    } catch (IOException e) {
 
-            System.out.println("### msg from [" + clientInfo + "]: " + new String(byteBuffer.array()));
-            byteBuffer.clear();
+                    }
+                }
+            }).start();
         }
     }
 
