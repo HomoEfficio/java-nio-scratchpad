@@ -10,7 +10,7 @@ import java.util.Scanner;
  * @author homo.efficio@gmail.com
  * Created on 2019-01-01.
  */
-public class Client {
+public class ConsoleClient {
 
     public static void main(String[] args) throws IOException {
         final SocketChannel socketChannel = SocketChannel.open();
