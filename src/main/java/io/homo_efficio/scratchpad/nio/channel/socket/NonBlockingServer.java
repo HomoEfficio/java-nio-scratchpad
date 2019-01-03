@@ -29,15 +29,6 @@ public class NonBlockingServer {
     }
 
     private static void addShutdownHook(ServerSocketChannel serverSocketChannel) {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (serverSocketChannel.isOpen()) {
-                try {
-                    System.out.println("\n\n열려있는 serverSocketChannel 닫음");
-                    serverSocketChannel.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(serverSocketChannel)));
     }
 }
