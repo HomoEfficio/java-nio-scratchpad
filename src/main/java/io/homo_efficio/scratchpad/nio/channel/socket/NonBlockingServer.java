@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author homo.efficio@gmail.com
@@ -20,10 +21,12 @@ public class NonBlockingServer {
         final String mainThreadName = Thread.currentThread().getName();
         System.out.println("# [" + mainThreadName + "] 서버 대기 중.." + serverSocketChannel.getLocalAddress().toString());
 
+        final ExecutorService executorService = ServerThreadPool.getExecutorService(10);
+
         while (true) {
             final SocketChannel socketChannel = serverSocketChannel.accept();
             if (socketChannel != null) {
-                new Thread(new EchoHandler(socketChannel)).start();
+                executorService.submit(new PrintHandler(socketChannel));
             }
         }
     }

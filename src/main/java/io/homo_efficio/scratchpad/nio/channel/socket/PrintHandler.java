@@ -8,11 +8,11 @@ import java.nio.channels.SocketChannel;
  * @author homo.efficio@gmail.com
  * Created on 2019-01-03.
  */
-public class EchoHandler implements Runnable {
+public class PrintHandler implements Runnable {
 
     private SocketChannel socketChannel;
 
-    public EchoHandler(SocketChannel socketChannel) {
+    public PrintHandler(SocketChannel socketChannel) {
         this.socketChannel = socketChannel;
     }
 
